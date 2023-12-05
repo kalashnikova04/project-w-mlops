@@ -1,1 +1,4 @@
-# project_w_MLOps
+# Проект курса "Прикладной MLOps"
+Реализовано: 
+- managing environments
+- managing dependencies
