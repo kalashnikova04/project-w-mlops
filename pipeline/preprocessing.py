@@ -5,6 +5,7 @@ import torchvision
 from torchvision import transforms
 from train import BATCH_SIZE
 
+
 # Path to a directory with image dataset and subfolders for training, validation and final testing
 DATA_PATH = r"data"  # PATH TO THE DATASET
 # Number of threads for data loader

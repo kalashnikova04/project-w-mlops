@@ -34,9 +34,7 @@ def calculate_metrics(scores, labels, print_log=False):
         metric_results[k] = metric_value
 
     if print_log:
-        print(
-            " | ".join(["{}: {:.4f}".format(k, v) for k, v in metric_results.items()])
-        )
+        print(" | ".join(["{}: {:.4f}".format(k, v) for k, v in metric_results.items()]))
 
     return metric_results
 
