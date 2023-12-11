@@ -1,4 +1,4 @@
 # Проект курса "Прикладной MLOps"
-Реализовано: 
+Реализовано:
 - managing environments
 - managing dependencies
