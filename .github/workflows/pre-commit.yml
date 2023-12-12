@@ -3,13 +3,10 @@ name: pre-commit
 on:
   workflow_call:
     inputs:
-      runs-on:
-        description: Platform to execute on
-        type: string
-        default: ubuntu-latest
-  pull_request:
-  push:
-    branches: [main]
+      runs-on: ubuntu-latest
+    pull_request:
+    push:
+      branches: [main]
 
 jobs:
   pre-commit:
