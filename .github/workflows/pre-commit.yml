@@ -1,16 +1,23 @@
 name: pre-commit
 
 on:
+  workflow_call:
+    inputs:
+      runs-on:
+        description: Platform to execute on
+        type: string
+        default: ubuntu-latest
   pull_request:
   push:
     branches: [main]
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    name: pre-commit
+    runs-on: ${{ inputs.runs-on }}
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
       with:
-      python-version: '>=3.8 <3.10'
+        python-version: '>=3.8 <3.10'
     - uses: pre-commit/action@v3.0.0
