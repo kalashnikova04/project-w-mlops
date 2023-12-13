@@ -1,0 +1,5 @@
+outs:
+- md5: 2788d5fa0c25cb00350663088db3e6fb
+  size: 502167
+  hash: md5
+  path: model_cnn_norm.ckpt
