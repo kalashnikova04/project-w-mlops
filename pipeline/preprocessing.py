@@ -12,16 +12,12 @@ DATA_PATH = r"data"  # PATH TO THE DATASET
 NUM_WORKERS = 4
 # Image size: even though image sizes are bigger than 64, we use this to speed up training
 SIZE_H = SIZE_W = 96
-# Number of classes in the dataset
-# NUM_CLASSES = 2
 
 
 # Images mean and std channelwise
 image_mean = [0.485, 0.456, 0.406]
 image_std = [0.229, 0.224, 0.225]
 
-# Last layer (embeddings) size for CNN models
-EMBEDDING_SIZE = 128
 
 transformer = transforms.Compose(
     [
