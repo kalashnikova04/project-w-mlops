@@ -47,7 +47,6 @@ class MyModel(torch.nn.Module):
 
     def forward(self, x):
         x = self.model(x)
-        print(x.shape)
         x = self.dropout(x)
         x = self.fc(x)
         x = self.dropout(x)

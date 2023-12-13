@@ -39,16 +39,15 @@ def calculate_metrics(scores, labels, print_log=False):
     return metric_results
 
 
-def compute_loss(model, data_batch, loss_function=nn.CrossEntropyLoss):
+def compute_loss(model, data_batch):
     """Compute the loss using loss_function for the batch of data and return mean loss value for this batch."""
-    # load the data
+
     img_batch = data_batch["img"]
     label_batch = data_batch["label"]
 
-    # forward pass
     logits = model(img_batch)
 
-    # loss computation
+    loss_function = nn.CrossEntropyLoss()
     loss = loss_function(logits, label_batch)
 
     return loss, model

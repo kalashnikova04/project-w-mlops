@@ -12,7 +12,6 @@ def test_model(
     batch_generator,
     subset_name="test",
     print_log=True,
-    loss_function=nn.CrossEntropyLoss,
     plot_scores=False,
 ):
     """Evaluate the model using data from batch_generator and metrics defined above."""
@@ -33,6 +32,7 @@ def test_model(
         labels = y_batch.numpy().tolist()
 
         # compute loss value
+        loss_function = nn.CrossEntropyLoss()
         loss = loss_function(logits, y_batch.to(device))
 
         # save the necessary data
