@@ -2,10 +2,9 @@ import time
 
 import numpy as np
 import torch
-from infer import test_model
 from matplotlib import pyplot as plt
+from pipeline import compute_loss, get_score_distributions, test_model
 from tqdm.auto import tqdm
-from utils import compute_loss, get_score_distributions
 
 
 # from IPython.display import clear_output
@@ -13,17 +12,14 @@ from utils import compute_loss, get_score_distributions
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-EPOCH_NUM = 30
-BATCH_SIZE = 256
-
 
 def train_model(
     model,
     train_batch_generator,
     val_batch_generator,
     opt,
+    n_epochs,
     ckpt_name=None,
-    n_epochs=EPOCH_NUM,
     visualize=True,
 ):
     """
@@ -116,7 +112,6 @@ def train_model(
         if val_accuracy_value > top_val_accuracy and ckpt_name is not None:
             top_val_accuracy = val_accuracy_value
 
-            # save checkpoint of the best model to disk
             with open(ckpt_name, "wb") as f:
                 torch.save(model, f)
 

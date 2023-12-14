@@ -3,12 +3,8 @@ from pathlib import Path
 import torch
 import torchvision
 from torchvision import transforms
-from train import BATCH_SIZE
 
 
-# Path to a directory with image dataset and subfolders for training, validation and final testing
-DATA_PATH = Path(Path("."), "data")
-NUM_WORKERS = 4
 # Image size: even though image sizes are bigger than 64, we use this to speed up training
 SIZE_H = SIZE_W = 96
 
@@ -27,13 +23,13 @@ transformer = transforms.Compose(
 )
 
 
-def create_dataloader(dataset, transform=transformer, shuffle=False):
+def create_dataloader(
+    root_path, dataset, batch_size, transform=transformer, shuffle=False
+):
     loaded_dataset = torchvision.datasets.ImageFolder(
-        Path(DATA_PATH, dataset), transform=transform
+        Path(root_path, dataset), transform=transform
     )
-    if dataset == "train_11k":
-        shuffle = True
 
     return torch.utils.data.DataLoader(
-        loaded_dataset, batch_size=BATCH_SIZE, shuffle=shuffle, num_workers=NUM_WORKERS
+        loaded_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=4
     )

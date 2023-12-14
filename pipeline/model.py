@@ -2,10 +2,6 @@ import torch
 import torch.nn as nn
 
 
-NUM_CLASSES = 2
-EMBEDDING_SIZE = 128
-
-
 def conv_block_3x3(in_channels, out_channels, stride=1):
     return nn.Sequential(
         nn.Conv2d(
@@ -26,7 +22,7 @@ class Flatten(nn.Module):
 
 
 class MyModel(torch.nn.Module):
-    def __init__(self, in_feature):
+    def __init__(self, in_feature, embedding_size, num_classes):
         super(MyModel, self).__init__()
 
         self.model = nn.Sequential(
@@ -39,11 +35,11 @@ class MyModel(torch.nn.Module):
         )
         self.dropout = nn.Dropout(p=0.3)
         self.fc = nn.Sequential(
-            nn.Linear(in_feature * 100, EMBEDDING_SIZE, bias=False),
-            nn.BatchNorm1d(num_features=EMBEDDING_SIZE),
+            nn.Linear(in_feature * 100, embedding_size, bias=False),
+            nn.BatchNorm1d(num_features=embedding_size),
             nn.ReLU(),
         )
-        self.pred = nn.Sequential(nn.Linear(EMBEDDING_SIZE, NUM_CLASSES, bias=False))
+        self.pred = nn.Sequential(nn.Linear(embedding_size, num_classes, bias=False))
 
     def forward(self, x):
         x = self.model(x)
