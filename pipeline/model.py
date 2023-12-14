@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-def conv_block_3x3(in_channels, out_channels, stride=1):
+def conv_block_3x3(in_channels: int, out_channels: int, stride: int = 1) -> torch.Tensor:
     return nn.Sequential(
         nn.Conv2d(
             in_channels=in_channels,
@@ -17,12 +17,12 @@ def conv_block_3x3(in_channels, out_channels, stride=1):
 
 # a special module that converts [batch, channel, w, h] to [batch, units]: tf/keras style
 class Flatten(nn.Module):
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return torch.flatten(x, start_dim=1)
 
 
-class MyModel(torch.nn.Module):
-    def __init__(self, in_feature, embedding_size, num_classes):
+class MyModel(nn.Module):
+    def __init__(self, in_feature: int, embedding_size: int, num_classes: int):
         super(MyModel, self).__init__()
 
         self.model = nn.Sequential(
@@ -41,7 +41,7 @@ class MyModel(torch.nn.Module):
         )
         self.pred = nn.Sequential(nn.Linear(embedding_size, num_classes, bias=False))
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.model(x)
         x = self.dropout(x)
         x = self.fc(x)

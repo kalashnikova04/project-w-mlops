@@ -1,6 +1,9 @@
+from typing import Any, Dict
+
 import torch
 import torch.nn as nn
 from pipeline import calculate_metrics
+from torch.utils.data import DataLoader
 
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -8,12 +11,12 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 
 @torch.no_grad()  # we do not need to save gradients on evaluation
 def test_model(
-    model,
-    batch_generator,
-    subset_name="test",
-    print_log=True,
-    plot_scores=False,
-):
+    model: torch.nn.Module,
+    batch_generator: DataLoader[Any],
+    subset_name: str = "test",
+    print_log: bool = True,
+    plot_scores: bool = False,
+) -> Dict:
     """Evaluate the model using data from batch_generator and metrics defined above."""
 
     # disable dropout / use averages for batch_norm

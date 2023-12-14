@@ -1,7 +1,8 @@
 from pathlib import Path
+from typing import Any
 
-import torch
 import torchvision
+from torch.utils.data import DataLoader
 from torchvision import transforms
 
 
@@ -24,12 +25,16 @@ transformer = transforms.Compose(
 
 
 def create_dataloader(
-    root_path, dataset, batch_size, transform=transformer, shuffle=False
-):
+    root_path: str,
+    dataset: str,
+    batch_size: int,
+    transform=transformer,
+    shuffle: bool = False,
+) -> DataLoader[Any]:
     loaded_dataset = torchvision.datasets.ImageFolder(
         Path(root_path, dataset), transform=transform
     )
 
-    return torch.utils.data.DataLoader(
+    return DataLoader(
         loaded_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=4
     )

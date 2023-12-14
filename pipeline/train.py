@@ -1,9 +1,11 @@
 import time
+from typing import Any, Tuple
 
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from pipeline import compute_loss, get_score_distributions, test_model
+from torch.utils.data import DataLoader
 from tqdm.auto import tqdm
 
 
@@ -14,14 +16,14 @@ device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cp
 
 
 def train_model(
-    model,
-    train_batch_generator,
-    val_batch_generator,
-    opt,
-    n_epochs,
-    ckpt_name=None,
-    visualize=True,
-):
+    model: torch.nn.Module,
+    train_batch_generator: DataLoader[Any],
+    val_batch_generator: DataLoader[Any],
+    opt: torch.optim.Optimizer,
+    n_epochs: int,
+    ckpt_name: str = None,
+    visualize: bool = True,
+) -> Tuple[torch.nn.Module, torch.optim.Optimizer]:
     """
     Run training: forward/backward pass using train_batch_generator and evaluation using val_batch_generator.
     Log performance using loss monitoring and score distribution plots for validation set.

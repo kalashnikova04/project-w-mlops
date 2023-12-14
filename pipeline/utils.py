@@ -1,16 +1,17 @@
+from typing import Dict, List, Tuple
+
 import numpy as np
+import torch
 import torch.nn as nn
 from sklearn.metrics import f1_score
 
 
-def accuracy(scores, labels, threshold=0.5):
-    assert type(scores) is np.ndarray and type(labels) is np.ndarray
+def accuracy(scores: np.ndarray, labels: np.ndarray, threshold: float = 0.5) -> float:
     predicted = np.array(scores > threshold).astype(np.int32)
     return np.mean(predicted == labels)
 
 
-def f1(scores, labels, threshold=0.5):
-    assert type(scores) is np.ndarray and type(labels) is np.ndarray
+def f1(scores: np.ndarray, labels: np.ndarray, threshold: float = 0.5) -> float:
     predicted = np.array(scores > threshold).astype(np.int32)
     return f1_score(labels, predicted)
 
@@ -18,7 +19,9 @@ def f1(scores, labels, threshold=0.5):
 tracked_metrics = {"accuracy": accuracy, "f1-score": f1}
 
 
-def calculate_metrics(scores, labels, print_log=False):
+def calculate_metrics(
+    scores: List[torch.Tensor], labels: List[np.ndarray], print_log: bool = False
+) -> Dict:
     """Compute all the metrics from tracked_metrics dict using scores and labels."""
 
     assert len(labels) == len(scores), print(
@@ -39,7 +42,7 @@ def calculate_metrics(scores, labels, print_log=False):
     return metric_results
 
 
-def compute_loss(model, data_batch):
+def compute_loss(model: nn.Module, data_batch: Dict) -> Tuple[torch.Tensor, nn.Module]:
     """Compute the loss using loss_function for the batch of data and return mean loss value for this batch."""
 
     img_batch = data_batch["img"]
@@ -53,7 +56,7 @@ def compute_loss(model, data_batch):
     return loss, model
 
 
-def get_score_distributions(epoch_result_dict):
+def get_score_distributions(epoch_result_dict: Dict) -> Dict:
     """Return per-class score arrays."""
     scores = epoch_result_dict["scores"]
     labels = epoch_result_dict["labels"]
