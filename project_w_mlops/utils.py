@@ -38,17 +38,3 @@ def calculate_metrics(
         print(" | ".join(["{}: {:.4f}".format(k, v) for k, v in metric_results.items()]))
 
     return metric_results
-
-
-def get_score_distributions(epoch_result_dict: Dict) -> Dict:
-    """Return per-class score arrays."""
-    scores = epoch_result_dict["scores"]
-    labels = epoch_result_dict["labels"]
-
-    # save per-class scores
-    for class_id in [0, 1]:
-        epoch_result_dict["scores_" + str(class_id)] = np.array(scores)[
-            np.array(labels) == class_id
-        ]
-
-    return epoch_result_dict

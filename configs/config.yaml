@@ -1,0 +1,28 @@
+defaults:
+  - datasets: dogs_vs_cats
+  - _self_
+
+data:
+  root_path: ${hydra:runtime.cwd}/data_for_testing
+  val_size: 0.2
+  dataloader_num_wokers: 4
+  batch_size: 128
+  image_mean: [0.485, 0.456, 0.406]
+  image_std: [0.229, 0.224, 0.225]
+  size_h: 96
+  size_w: 96
+  num_classes: 2
+
+artifacts:
+  experiment_name: example-experiment
+
+predictions:
+  root_path: ${hydra:runtime.cwd}/predictions
+
+train:
+  models:
+    root_path: ${hydra:runtime.cwd}/models
+  n_epochs: 10
+  lr: 1e-3
+  embedding_size: 128
+  in_feature: 3 # may be changed for future tasks

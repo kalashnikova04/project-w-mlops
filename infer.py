@@ -1,16 +1,19 @@
 from pathlib import Path
 
 import hydra
+import mlflow
 import onnx
 import torch
-from loops import predict
 from omegaconf import DictConfig
 from onnx2torch import convert
-from preprocessing import create_dataloader
+from project_w_mlops.loops import predict
+from project_w_mlops.preprocessing import create_dataloader
 
 
-@hydra.main(version_base=None, config_path="../conf", config_name="config")
+@hydra.main(version_base=None, config_path="configs", config_name="config")
 def main(cfg: DictConfig):
+
+    mlflow.set_experiment(cfg.artifacts.experiment_name)
 
     test_dataloader = create_dataloader(
         root_path=cfg.data.root_path,
@@ -24,7 +27,9 @@ def main(cfg: DictConfig):
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    onnx_model = onnx.load(Path(cfg.artifacts.root_path, cfg.artifacts.experiment_name))
+    onnx_model = onnx.load(
+        Path(cfg.train.models.root_path, f"{cfg.artifacts.experiment_name}.onnx")
+    )
     torch_model = convert(onnx_model).to(device)
 
     loss_fn = torch.nn.CrossEntropyLoss()
@@ -35,7 +40,7 @@ def main(cfg: DictConfig):
         loss_fn,
         device,
         cfg.predictions.root_path,
-        cfg.artifacts.name,
+        cfg.artifacts.experiment_name,
     )
 
 
