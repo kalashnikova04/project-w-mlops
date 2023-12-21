@@ -1,54 +1,43 @@
-from typing import Any, Dict
+from pathlib import Path
 
+import hydra
+import onnx
 import torch
-import torch.nn as nn
-from pipeline import calculate_metrics
-from torch.utils.data import DataLoader
+from loops import predict
+from omegaconf import DictConfig
+from onnx2torch import convert
+from preprocessing import create_dataloader
 
 
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+@hydra.main(version_base=None, config_path="../conf", config_name="config")
+def main(cfg: DictConfig):
+
+    test_dataloader = create_dataloader(
+        root_path=cfg.data.root_path,
+        dataset=cfg.datasets.test_data,
+        size_h=cfg.data.size_h,
+        size_w=cfg.data.size_w,
+        image_mean=cfg.data.image_mean,
+        image_std=cfg.data.image_std,
+        batch_size=cfg.data.batch_size,
+    )
+
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+
+    onnx_model = onnx.load(Path(cfg.artifacts.root_path, cfg.artifacts.experiment_name))
+    torch_model = convert(onnx_model).to(device)
+
+    loss_fn = torch.nn.CrossEntropyLoss()
+
+    predict(
+        torch_model,
+        test_dataloader,
+        loss_fn,
+        device,
+        cfg.predictions.root_path,
+        cfg.artifacts.name,
+    )
 
 
-@torch.no_grad()  # we do not need to save gradients on evaluation
-def test_model(
-    model: torch.nn.Module,
-    batch_generator: DataLoader[Any],
-    subset_name: str = "test",
-    print_log: bool = True,
-    plot_scores: bool = False,
-) -> Dict:
-    """Evaluate the model using data from batch_generator and metrics defined above."""
-
-    # disable dropout / use averages for batch_norm
-    model.train(False)
-
-    # save scores, labels and loss values for performance logging
-    score_list = []
-    label_list = []
-    loss_list = []
-
-    for X_batch, y_batch in batch_generator:
-
-        # do the forward pass
-        logits = model(X_batch.to(device))
-        scores = torch.softmax(logits, dim=1)[:, 1].detach().cpu()
-        labels = y_batch.numpy().tolist()
-
-        # compute loss value
-        loss_function = nn.CrossEntropyLoss()
-        loss = loss_function(logits, y_batch.to(device))
-
-        # save the necessary data
-        loss_list.append(loss.detach().cpu().numpy().tolist())
-        score_list.extend(scores)
-        label_list.extend(labels)
-
-    if print_log:
-        print("Results on {} set | ".format(subset_name), end="")
-
-    metric_results = calculate_metrics(score_list, label_list, print_log)
-    metric_results["scores"] = score_list
-    metric_results["labels"] = label_list
-    metric_results["loss"] = loss_list
-
-    return metric_results
+if __name__ == "__main__":
+    main()

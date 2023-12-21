@@ -54,9 +54,11 @@ class MyDataModule(pl.LightningDataModule):
         self.val_dataset = torchvision.datasets.ImageFolder(
             Path(self.root_path, "val"), transform=transformer
         )
+        self.predict_dataset = torchvision.datasets.ImageFolder(
+            Path(self.root_path, "test_labeled"), transform=transformer
+        )
 
     def train_dataloader(self) -> torch.utils.data.DataLoader:
-
         return torch.utils.data.DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -67,6 +69,14 @@ class MyDataModule(pl.LightningDataModule):
     def val_dataloader(self) -> torch.utils.data.DataLoader:
         return torch.utils.data.DataLoader(
             self.val_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.dataloader_num_wokers,
+        )
+
+    def predict_dataloader(self) -> torch.utils.data.DataLoader:
+        return torch.utils.data.DataLoader(
+            self.predict_dataset,
             batch_size=self.batch_size,
             shuffle=False,
             num_workers=self.dataloader_num_wokers,

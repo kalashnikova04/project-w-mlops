@@ -1,8 +1,7 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import numpy as np
 import torch
-import torch.nn as nn
 from sklearn.metrics import f1_score
 
 
@@ -16,11 +15,8 @@ def f1(scores: np.ndarray, labels: np.ndarray, threshold: float = 0.5) -> float:
     return f1_score(labels, predicted)
 
 
-tracked_metrics = {"accuracy": accuracy, "f1-score": f1}
-
-
 def calculate_metrics(
-    scores: List[torch.Tensor], labels: List[np.ndarray], print_log: bool = False
+    scores: List[torch.Tensor], labels: List[np.ndarray], print_log: bool = True
 ) -> Dict:
     """Compute all the metrics from tracked_metrics dict using scores and labels."""
 
@@ -31,6 +27,8 @@ def calculate_metrics(
     scores_array = np.array(scores).astype(np.float32)
     labels_array = np.array(labels)
 
+    tracked_metrics = {"accuracy": accuracy, "f1-score": f1}
+
     metric_results = {}
     for k, v in tracked_metrics.items():
         metric_value = v(scores_array, labels_array)
@@ -40,20 +38,6 @@ def calculate_metrics(
         print(" | ".join(["{}: {:.4f}".format(k, v) for k, v in metric_results.items()]))
 
     return metric_results
-
-
-def compute_loss(model: nn.Module, data_batch: Dict) -> Tuple[torch.Tensor, nn.Module]:
-    """Compute the loss using loss_function for the batch of data and return mean loss value for this batch."""
-
-    img_batch = data_batch["img"]
-    label_batch = data_batch["label"]
-
-    logits = model(img_batch)
-
-    loss_function = nn.CrossEntropyLoss()
-    loss = loss_function(logits, label_batch)
-
-    return loss, model
 
 
 def get_score_distributions(epoch_result_dict: Dict) -> Dict:

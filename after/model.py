@@ -152,25 +152,12 @@ class MyModel(pl.LightningModule):
         Args:
             batch: The output of your :class:`~torch.utils.data.DataLoader`.
             batch_idx: The index of this batch.
-            dataloader_id: The index of the dataloader that produced this batch.
-                (only if multiple test dataloaders used).
 
         Return:
            Any of.
 
             - Any object or value
             - ``None`` - Testing will skip to the next batch
-
-        .. code-block:: python
-
-            # if you have one test dataloader:
-            def test_step(self, batch, batch_idx):
-                ...
-
-
-            # if you have multiple test dataloaders:
-            def test_step(self, batch, batch_idx, dataloader_idx=0):
-                ...
 
         Examples::
 
@@ -195,16 +182,6 @@ class MyModel(pl.LightningModule):
                 # log the outputs!
                 self.log_dict({'test_loss': loss, 'test_acc': test_acc})
 
-        If you pass in multiple test dataloaders, :meth:`test_step` will have an
-        additional argument. We recommend setting the default value of 0 so that you can
-        quickly switch between single and multiple dataloaders.
-
-        .. code-block:: python
-
-            # CASE 2: multiple test dataloaders
-            def test_step(self, batch, batch_idx, dataloader_idx=0):
-                # dataloader_idx tells you which dataset this is.
-                ...
 
         Note:
             If you don't need to test you don't need to implement this method.
@@ -214,7 +191,10 @@ class MyModel(pl.LightningModule):
             PyTorch gradients have been disabled. At the end of the test epoch, the model goes back
             to training mode and gradients are enabled.
         """
-        pass
+        x, y = batch
+        logits = self(x)
+        acc = self.accuracy(logits, y)
+        self.log("test_acc", acc)
 
     def predict_step(self, batch: Any, batch_idx: int) -> Any:
         """Step function called during
@@ -252,12 +232,17 @@ class MyModel(pl.LightningModule):
         Args:
             batch: Current batch.
             batch_idx: Index of current batch.
-            dataloader_idx: Index of the current dataloader.
 
         Return:
             Predicted output
         """
-        pass
+        x, y = batch
+        return self(x)
+
+    # переписать
+    # @staticmethod
+    # def accuracy(logits, y):
+    #     return torch.sum(torch.eq(torch.argmax(logits, -1), y).to(torch.float32)) / len(y)
 
     def configure_optimizers(self) -> Any:
         return torch.optim.Adam(self.parameters(), lr=self.conf["train"]["learning_rate"])
