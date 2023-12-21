@@ -3,7 +3,7 @@ defaults:
   - _self_
 
 data:
-  root_path: ${hydra:runtime.cwd}/data_for_testing
+  root_path: ${hydra:runtime.cwd}/data
   val_size: 0.2
   dataloader_num_wokers: 4
   batch_size: 128
@@ -22,7 +22,7 @@ predictions:
 train:
   models:
     root_path: ${hydra:runtime.cwd}/models
-  n_epochs: 10
+  n_epochs: 3
   lr: 1e-3
   embedding_size: 128
   in_feature: 3 # may be changed for future tasks

@@ -6,8 +6,8 @@ import onnx
 import torch
 from omegaconf import DictConfig
 from onnx2torch import convert
+from project_w_mlops.data import create_dataloader
 from project_w_mlops.loops import predict
-from project_w_mlops.preprocessing import create_dataloader
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="config")

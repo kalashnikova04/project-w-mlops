@@ -4,14 +4,16 @@ import hydra
 import mlflow
 import torch
 from omegaconf import DictConfig, OmegaConf
+from project_w_mlops.data import create_dataloader
 from project_w_mlops.loops import train_model
 from project_w_mlops.model import MyModel
-from project_w_mlops.preprocessing import create_dataloader
 
 
 @hydra.main(version_base=None, config_path="configs", config_name="config")
 def main(cfg: DictConfig):
     print(OmegaConf.to_yaml(cfg))
+
+    subprocess.run(["dvc", "pull"])
 
     mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
     mlflow.set_experiment(cfg.artifacts.experiment_name)

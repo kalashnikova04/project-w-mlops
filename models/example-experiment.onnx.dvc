@@ -1,0 +1,5 @@
+outs:
+- md5: 9ad74794cc6ccaeb66fbcde1bb09d160
+  size: 487472
+  hash: md5
+  path: example-experiment.onnx
