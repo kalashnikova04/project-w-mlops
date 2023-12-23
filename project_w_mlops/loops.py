@@ -161,13 +161,11 @@ def train_model(
 def predict(
     model: torch.nn.Module,
     data_loader: torch.utils.data.DataLoader,
-    loss_fn: torch.nn.Module,
     device: torch.device,
     root_path_for_preds: str,
     file: str,
 ):
     model.eval()
-    running_loss = 0.0
     score_list, label_list, predicts = [], [], []
 
     with torch.no_grad():
@@ -177,19 +175,13 @@ def predict(
             logits = model(X_batch)
             scores = torch.softmax(logits, dim=1)[:, 1].detach().cpu()
 
-            loss = loss_fn(logits, y_batch)
-
             score_list.extend(scores)
             label_list.extend(y_batch.numpy().tolist())
             predicts.extend(logits.max(1).indices.cpu().numpy())
 
-            running_loss += loss.item()
-
     np.savetxt(Path(root_path_for_preds, f"{file}.csv"), predicts, fmt="%d")
 
-    epoch_loss = running_loss / len(data_loader)
     metric_results = calculate_metrics(score_list, label_list)
-
-    mlflow.log_metric("test_loss", epoch_loss)
-    mlflow.log_metric("test_accuracy", metric_results["accuracy"])
-    mlflow.log_metric("test_f1-score", metric_results["f1-score"])
+    print(
+        f"Test Accuracy: {metric_results['accuracy']:.4f}, Test f1-score: {metric_results['f1-score']:.4f}"
+    )

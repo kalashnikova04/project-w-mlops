@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import hydra
-import mlflow
 import onnx
 import torch
 from omegaconf import DictConfig
@@ -12,8 +11,6 @@ from project_w_mlops.loops import predict
 
 @hydra.main(version_base=None, config_path="configs", config_name="config")
 def main(cfg: DictConfig):
-
-    mlflow.set_experiment(cfg.artifacts.experiment_name)
 
     test_dataloader = create_dataloader(
         root_path=cfg.data.root_path,
@@ -32,12 +29,9 @@ def main(cfg: DictConfig):
     )
     torch_model = convert(onnx_model).to(device)
 
-    loss_fn = torch.nn.CrossEntropyLoss()
-
     predict(
         torch_model,
         test_dataloader,
-        loss_fn,
         device,
         cfg.predictions.root_path,
         cfg.artifacts.experiment_name,
