@@ -179,6 +179,7 @@ def predict(
             label_list.extend(y_batch.numpy().tolist())
             predicts.extend(logits.max(1).indices.cpu().numpy())
 
+    Path(root_path_for_preds).mkdir(parents=True, exist_ok=True)
     np.savetxt(Path(root_path_for_preds, f"{file}.csv"), predicts, fmt="%d")
 
     metric_results = calculate_metrics(score_list, label_list)
