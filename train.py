@@ -15,7 +15,7 @@ def main(cfg: DictConfig):
 
     subprocess.run(["dvc", "pull"])
 
-    mlflow.set_tracking_uri(uri="http://127.0.0.1:8080")
+    mlflow.set_tracking_uri(uri="http://128.0.1.1:8080")
     mlflow.set_experiment(cfg.artifacts.experiment_name)
 
     train_dataloader = create_dataloader(
