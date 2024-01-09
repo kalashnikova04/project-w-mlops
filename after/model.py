@@ -20,8 +20,8 @@ def conv_block_3x3(in_channels: int, out_channels: int, stride: int = 1) -> torc
 
 
 class Flatten(nn.Module):
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return torch.flatten(x, start_dim=1)
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        return torch.flatten(tensor, start_dim=1)
 
 
 class MyModel(pl.LightningModule):
@@ -57,20 +57,20 @@ class MyModel(pl.LightningModule):
 
         self.loss_fn = nn.CrossEntropyLoss()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.model(x)
-        x = self.dropout(x)
-        x = self.fc(x)
-        x = self.dropout(x)
-        x = self.pred(x)
-        return x
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        tensor = self.model(tensor)
+        tensor = self.dropout(tensor)
+        tensor = self.fc(tensor)
+        tensor = self.dropout(tensor)
+        tensor = self.pred(tensor)
+        return tensor
 
     def training_step(self, batch: Any, batch_idx: int):
-        """Here you compute and return the training loss and some additional metrics
+        """Compute and return the training loss and some additional metrics
         for e.g. the progress bar or logger.
 
         Args:
-            batch: The output of your :class:`~torch.utils.data.DataLoader`.
+            batch: The output of DataLoader
                 A tensor, tuple or list.
             batch_idx (``int``): Integer displaying index of this batch
 
@@ -103,12 +103,6 @@ class MyModel(pl.LightningModule):
         """Operates on a single batch of data from the validation set.
         In this step you'd might generate examples or calculate anything of interest like
         accuracy.
-
-        Args:
-            batch: The output of your :class:`~torch.utils.data.DataLoader`.
-            batch_idx: The index of this batch.
-            dataloader_idx: The index of the dataloader that produced this batch.
-                (only if multiple val dataloaders used)
 
         Return:
             - Any object or value
@@ -182,28 +176,17 @@ class MyModel(pl.LightningModule):
                 # log the outputs!
                 self.log_dict({'test_loss': loss, 'test_acc': test_acc})
 
-
-        Note:
-            If you don't need to test you don't need to implement this method.
-
-        Note:
-            When the :meth:`test_step` is called, the model has been put in eval mode and
-            PyTorch gradients have been disabled. At the end of the test epoch, the model goes back
-            to training mode and gradients are enabled.
         """
-        x, y = batch
-        logits = self(x)
-        acc = self.accuracy(logits, y)
+        X_batch, y_batch = batch
+        logits = self(X_batch)
+        acc = self.accuracy(logits, y_batch)
         self.log("test_acc", acc)
 
     def predict_step(self, batch: Any, batch_idx: int) -> Any:
-        """Step function called during
-        :meth:`~pytorch_lightning.trainer.trainer.Trainer.predict`. By default, it
-        calls :meth:`~pytorch_lightning.core.module.LightningModule.forward`.
+        """By default, it calls forward method.
         Override to add any processing logic.
 
-        The :meth:`~pytorch_lightning.core.module.LightningModule.predict_step` is used
-        to scale inference on multi-devices.
+        It is used to scale inference on multi-devices.
 
         To prevent an OOM error, it is possible to use
         :class:`~pytorch_lightning.callbacks.BasePredictionWriter`
@@ -228,21 +211,9 @@ class MyModel(pl.LightningModule):
             trainer = Trainer(accelerator="gpu", devices=2)
             predictions = trainer.predict(model, dm)
 
-
-        Args:
-            batch: Current batch.
-            batch_idx: Index of current batch.
-
-        Return:
-            Predicted output
         """
-        x, y = batch
-        return self(x)
-
-    # переписать
-    # @staticmethod
-    # def accuracy(logits, y):
-    #     return torch.sum(torch.eq(torch.argmax(logits, -1), y).to(torch.float32)) / len(y)
+        X_batch, _ = batch
+        return self(X_batch)
 
     def configure_optimizers(self) -> Any:
         return torch.optim.Adam(self.parameters(), lr=self.conf["train"]["learning_rate"])

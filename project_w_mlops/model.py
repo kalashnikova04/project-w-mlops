@@ -4,8 +4,8 @@ import torch.nn as nn
 
 # a special module that converts [batch, channel, w, h] to [batch, units]: tf/keras style
 class Flatten(nn.Module):
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return torch.flatten(x, start_dim=1)
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        return torch.flatten(tensor, start_dim=1)
 
 
 class MyModel(nn.Module):
@@ -43,10 +43,10 @@ class MyModel(nn.Module):
             nn.ReLU(),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.model(x)
-        x = self.dropout(x)
-        x = self.fc(x)
-        x = self.dropout(x)
-        x = self.pred(x)
-        return x
+    def forward(self, tensor: torch.Tensor) -> torch.Tensor:
+        tensor = self.model(tensor)
+        tensor = self.dropout(tensor)
+        tensor = self.fc(tensor)
+        tensor = self.dropout(tensor)
+        tensor = self.pred(tensor)
+        return tensor

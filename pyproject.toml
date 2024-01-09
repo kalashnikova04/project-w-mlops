@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "project-tools"
+name = "project_tools"
 version = "0.1.0"
 description = "Here are dependencies for ml project"
 authors = ["Anastasia <kalashnikova040800@gmail.com>"]
@@ -39,7 +39,7 @@ line-length = 90
 target-version = ["py38"]
 
 [tool.isort]
-src_paths = ["project-tools"]
+src_paths = ["project_tools"]
 profile = "black"
 line_length = 90
 lines_after_imports = 2

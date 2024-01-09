@@ -14,7 +14,6 @@ def main(cfg: DictConfig):
     torch.set_float32_matmul_precision("medium")
     dm = MyDataModule(
         root_path=cfg.data.root_path,
-        # val_size=cfg.data.val_size,
         dataloader_num_wokers=cfg.data.dataloader_num_wokers,
         batch_size=cfg.data.batch_size,
         image_mean=cfg.data.image_mean,
